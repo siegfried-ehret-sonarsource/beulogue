@@ -1,0 +1,18 @@
+name: beulogue
+version: 0.1.0
+
+authors:
+  - Siegfried Ehret <siegfried@ehret.me>
+
+targets:
+  beulogue:
+    main: src/beulogue.cr
+
+crystal: 0.28.0
+
+license: MIT
+
+dependencies:
+  crustache:
+    github: MakeNowJust/crustache
+    version: 2.4.0
