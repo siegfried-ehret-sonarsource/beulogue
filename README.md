@@ -44,12 +44,14 @@ my-website
 
 The possible keys and values are:
 
+- **base** (string): the base url of your website.
 - **title** (string): the title of your website.
-- **languages** (array of strings): the list of languages for the website. The first one is the default one.
+- **languages** (array of strings): the list of languages for the website. You must add at least one language; the first one is the default one.
 
 Example:
 
 ```yaml
+base: https://ehret.me
 title: My site
 languages:
   - en
@@ -76,6 +78,33 @@ The following properties are valid front-matter:
 - `title`: The title for your content item.
 - `date`: a point in time, used to sort your content items ([more info on the format](https://yaml.org/type/timestamp.html)).
 
+#### Multilingual site
+
+:warning: currently, a single language will end up in the language folder, I'll fix that.
+
+As explained in the Configuration part, you need at least one language, useful for the `lang` attribute for example.
+
+If our configuration is like the following:
+
+```yaml
+base: https://ehret.me
+title: My site
+languages:
+  - en
+  - fr
+```
+
+Your contents:
+
+- In *english*: filenames will be like `about.md` (no mention about the language in the filename).
+- In *other language*: filenames will be like `about.fr.md` if you have a `fr` language.
+- Filenames ending with a non defined language will given the default language.
+
+Structure:
+
+- If you have one language: everything will start the root of the `public` folder.
+- If you have multiple languages: each language will start in the `public/<language>/` folder. A default `index.html` file will be at the root of the `public` folder, redirecting to the default language.
+
 ### Templating
 
 You have 2 html files to provide, they must be in the `templates` folder of your site:
@@ -83,7 +112,28 @@ You have 2 html files to provide, they must be in the `templates` folder of your
 - `list.html`: for the list of items
 - `page.html`: for a content item
 
-TODO available variables
+#### Variables for the page template
+
+- `title`: the title of the page, from your content front matter.
+- `date`: the date of your content, from its front matter
+- `content`: your content in html.
+- `language`: the language of your content.
+- `url`: the url of your page.
+- `site`
+	- `title`: the title of the site.
+	- `languages`: a list of available languages for the site.
+- `beulogue`
+	- `cwd`: the current working directory.
+
+#### Variables for the list template
+
+- `pages`: an array with page elements (see previous section).
+- `language`: the language of the page.
+- `site`
+	- `title`: the title of the site.
+	- `languages`: a list of available languages for the site.
+- `beulogue`
+	- `cwd`: the current working directory.
 
 ### Running
 
@@ -99,16 +149,21 @@ Run `beulogue` in `my-website` folder. Voilà !
 - [x] basic templating (pages)
 - [x] basic templating (list)
 - [x] markdown front-matter
-- [ ] multilingual site
+- [x] multilingual site
 - [ ] rss
 - [ ] shortcodes
 
 And maybe at some point:
 
+- [ ] links between languages
 - [ ] tags
 - [ ] drafts
 - [ ] pagination
 - [ ] livereload
+
+## License
+
+Licensed under the [GPLv3 license](./LICENSE).
 
 ## Development
 
