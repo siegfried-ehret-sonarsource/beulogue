@@ -15,9 +15,26 @@ module Beulogue
         Process.exit
       else
         files = walk(@cwd)
-        pages = files.map { |f| writePage(convert(f)) }
-        writeList(pages)
+
+        if @config.languages.size > 1
+          pagesPerLanguage = splitPerLanguage(files, @config.languages)
+
+          pagesPerLanguage.each do |lang, filesForLanguage|
+            pages = filesForLanguage.map { |f| writePage(convert(f, lang)) }
+            writeList(pages, lang)
+          end
+
+          writeRedirection(@config.languages[0])
+        else
+          lang = @config.languages[0]
+          pages = files.map { |f| writePage(convert(f, "")) }
+          writeList(pages, "")
+        end
       end
+    end
+
+    private def splitPerLanguage(files : Array(Path), languages : Array(String))
+      files.group_by { |f| languages.find { |e| f.to_s.ends_with?(".#{e}.md") } || languages[0] }
     end
 
     private def walk(path : Path, extra : String = "content")
@@ -38,14 +55,14 @@ module Beulogue
       files
     end
 
-    private def convert(fromPath : Path)
-      BeulogueObject.new(fromPath, @cwd)
+    private def convert(fromPath : Path, lang : String)
+      BeulogueObject.new(fromPath, lang, @cwd)
     end
 
-    private def writeList(pages : Array(BeuloguePage))
+    private def writeList(pages : Array(BeuloguePage), lang : String)
       model = {
         "pages"    => pages.sort_by { |p| p.date }.reverse.map { |p| p.to_hash },
-        "language" => "en",
+        "language" => lang,
         "site"     => {
           "title"     => @config.title,
           "languages" => @config.languages,
@@ -58,8 +75,18 @@ module Beulogue
       targetDir = @config.targetDir
 
       if !targetDir.nil?
-        File.write(Path[targetDir].join("index.html").to_s,
+        File.write(Path[targetDir].join(lang, "index.html").to_s,
           HTML.unescape(Crustache.render(@templates.list, model)))
+      end
+    end
+
+    private def writeRedirection(lang : String)
+      targetDir = @config.targetDir
+
+      if !targetDir.nil?
+        html = "<!DOCTYPE html><html><head><title>{{base}}/{{lang}}</title><link rel=\"canonical\" href=\"{{base}}/{{lang}}\"/><meta name=\"robots\" content=\"noindex\"/><meta charset=\"utf-8\"/><meta http-equiv=\"refresh\" content=\"0; url={{base}}/{{lang}}\" /></head></html>"
+        File.write(Path[targetDir].join("index.html").to_s,
+          html.gsub("{{base}}", @config.base).gsub("{{lang}}", lang))
       end
     end
 

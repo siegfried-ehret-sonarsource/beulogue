@@ -4,6 +4,7 @@ module Beulogue
   class BeulogueConfig
     YAML.mapping(
       # From beulogue.yaml
+      base: String,
       title: String,
       languages: Array(String),
 
@@ -27,7 +28,7 @@ module Beulogue
     getter content : String
     getter frontMatter : BeulogueFrontMatter
 
-    def initialize(@fromPath : Path, cwd : Path)
+    def initialize(@fromPath : Path, lang : String, cwd : Path)
       frontMatterDelimiter = "---"
       frontMatterDelimiterCount = 0
       frontMatter = ""
@@ -47,8 +48,16 @@ module Beulogue
 
       @frontMatter = BeulogueFrontMatter.from_yaml(frontMatter)
       @content = Markdown.to_html(content)
-      @toPath = Path[fromPath.to_s.sub("/content/", "/public/").sub(".md", ".html")]
-      @toURL = @toPath.to_s.sub(cwd.join("public").to_s, "")
+
+      tempToPath = fromPath.to_s.sub("/content/", "/public/#{lang}/")
+
+      if (tempToPath.ends_with?(".#{lang}.md"))
+        @toPath = Path[tempToPath.sub(".#{lang}.md", ".html")]
+      else
+        @toPath = Path[tempToPath.sub(".md", ".html")]
+      end
+
+      @toURL = @toPath.to_s.gsub("//", "/").sub(cwd.join("public").to_s, "")
     end
   end
 
@@ -78,7 +87,7 @@ module Beulogue
       @title = bo.frontMatter.title
       @date = bo.frontMatter.date
       @content = bo.content
-      @language = "en"
+      @language = config.languages[0]
       @url = bo.toURL
       @siteTitle = config.title
       @siteLanguages = config.languages
