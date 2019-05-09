@@ -39,12 +39,12 @@ module Beulogue
     end
 
     private def convert(fromPath : Path)
-      BeulogueObject.new(fromPath)
+      BeulogueObject.new(fromPath, @cwd)
     end
 
-    private def writeList(pages)
+    private def writeList(pages : Array(BeuloguePage))
       model = {
-        "pages"    => pages,
+        "pages"    => pages.sort_by { |p| p.date }.reverse.map { |p| p.to_hash },
         "language" => "en",
         "site"     => {
           "title"     => @config.title,
@@ -67,19 +67,9 @@ module Beulogue
       toDir = File.dirname(bo.toPath.to_s)
       Dir.mkdir_p(toDir)
 
-      model = {
-        "content"  => bo.content,
-        "language" => "en",
-        "site"     => {
-          "title"     => @config.title,
-          "languages" => @config.languages,
-        },
-        "beulogue" => {
-          "cwd" => @config.cwd,
-        },
-      }
+      model = BeuloguePage.new(bo, @config)
 
-      File.write(bo.toPath, HTML.unescape(Crustache.render(@templates.page, model)))
+      File.write(bo.toPath, HTML.unescape(Crustache.render(@templates.page, model.to_hash)))
 
       model
     end

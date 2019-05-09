@@ -13,14 +13,42 @@ module Beulogue
     )
   end
 
+  class BeulogueFrontMatter
+    YAML.mapping(
+      title: String,
+      date: Time,
+    )
+  end
+
   class BeulogueObject
     getter fromPath : Path
     getter toPath : Path
+    getter toURL : String
     getter content : String
+    getter frontMatter : BeulogueFrontMatter
 
-    def initialize(@fromPath : Path)
-      @content = Markdown.to_html(File.read(fromPath))
+    def initialize(@fromPath : Path, cwd : Path)
+      frontMatterDelimiter = "---"
+      frontMatterDelimiterCount = 0
+      frontMatter = ""
+      content = ""
+
+      File.read_lines(fromPath).each do |line|
+        if frontMatterDelimiterCount < 2
+          if line == frontMatterDelimiter
+            frontMatterDelimiterCount += 1
+          else
+            frontMatter += line + "\n"
+          end
+        else
+          content += line + "\n"
+        end
+      end
+
+      @frontMatter = BeulogueFrontMatter.from_yaml(frontMatter)
+      @content = Markdown.to_html(content)
       @toPath = Path[fromPath.to_s.sub("/content/", "/public/").sub(".md", ".html")]
+      @toURL = @toPath.to_s.sub(cwd.join("public").to_s, "")
     end
   end
 
@@ -33,6 +61,47 @@ module Beulogue
       pagePath = path.join("templates", "page.html")
       @list = Crustache.parse File.read(listPath)
       @page = Crustache.parse File.read(pagePath)
+    end
+  end
+
+  class BeuloguePage
+    getter title : String
+    getter date : Time
+    getter content : String
+    getter language : String
+    getter url : String
+    getter siteTitle : String
+    getter siteLanguages : Array(String)
+    getter beulogueCwd : String?
+
+    def initialize(bo : BeulogueObject, config : BeulogueConfig)
+      @title = bo.frontMatter.title
+      @date = bo.frontMatter.date
+      @content = bo.content
+      @language = "en"
+      @url = bo.toURL
+      @siteTitle = config.title
+      @siteLanguages = config.languages
+      @beulogueCwd = config.cwd
+    end
+
+    def to_hash
+      model = {
+        "title"    => @title,
+        "date"     => @date,
+        "content"  => @content,
+        "language" => @language,
+        "url"      => @url,
+        "site"     => {
+          "title"     => @siteTitle,
+          "languages" => @siteLanguages,
+        },
+        "beulogue" => {
+          "cwd" => @beulogueCwd,
+        },
+      }
+
+      model
     end
   end
 end
