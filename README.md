@@ -19,19 +19,22 @@ TODO
 
 ### Structure
 
-your website **must** be something like:
+Your website must be something like:
 
 ```
 my-website
 ├── beulogue.yml
-└── content
-    ├── 2019
-    │   ├── 05
-    │   │   └── may.md
-    │   └── jtutu.md
-    ├── about.fr.md
-    ├── about.jp.md
-    └── about.md
+├── content
+│   ├── 2019
+│   │   ├── 05
+│   │   │   └── may.md
+│   │   └── jtutu.md
+│   ├── about.fr.md
+│   ├── about.jp.md
+│   └── about.md
+└── templates
+    ├── list.html
+    └── page.html
 ```
 
 - `beulogue.yml` is a mandatory configuration file
@@ -42,7 +45,7 @@ my-website
 The possible keys and values are:
 
 - **title** (string): the title of your website.
-- **languages** (array of strings): the list of languages for the website.
+- **languages** (array of strings): the list of languages for the website. The first one is the default one.
 
 Example:
 
@@ -53,9 +56,34 @@ languages:
   - fr
 ```
 
+### Content
+
+Content items must be in the `content` folder of your site. The expected format is markdown.
+
+You can use front-matter, like that:
+
+```
+---
+title: My title
+date: 2019-05-07
+---
+
+# My content...
+```
+
+The following properties are valid front-matter:
+
+- `title`: The title for your content item.
+- `date`: a point in time, used to sort your content items ([more info on the format](https://yaml.org/type/timestamp.html)).
+
 ### Templating
 
-TODO
+You have 2 html files to provide, they must be in the `templates` folder of your site:
+
+- `list.html`: for the list of items
+- `page.html`: for a content item
+
+TODO available variables
 
 ### Running
 
@@ -65,16 +93,19 @@ Run `beulogue` in `my-website` folder. Voilà !
 
 `beulogue` is an experiment to discover the [Crystal](https://crystal-lang.org/) programming language, 2 years after playing with [the same concept with Node.js](https://www.npmjs.com/package/beulogue).
 
-`beulogue` aims to stay simple and provide the following:
+`beulogue` aims to stay simple and provide the following for the first version:
 
 - [x] mardown files to html pages
 - [x] basic templating (pages)
 - [x] basic templating (list)
-- [ ] markdown front-matter
+- [x] markdown front-matter
 - [ ] multilingual site
 - [ ] rss
-- [ ] tags
 - [ ] shortcodes
+
+And maybe at some point:
+
+- [ ] tags
 - [ ] drafts
 - [ ] pagination
 - [ ] livereload
