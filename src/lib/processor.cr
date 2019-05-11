@@ -1,5 +1,6 @@
 require "html"
 require "markdown"
+require "xml"
 require "./objects"
 
 module Beulogue
@@ -11,24 +12,40 @@ module Beulogue
 
     def run
       if @config.targetDir.nil?
-        puts "Can't find target directory"
-        Process.exit
+        Beulogue.logger.fatal "Can't find target directory"
+
+        exit
       else
         files = walk(@cwd)
 
         if @config.languages.size > 1
-          pagesPerLanguage = splitPerLanguage(files, @config.languages)
+          filesPerLanguage = splitPerLanguage(files, @config.languages)
 
-          pagesPerLanguage.each do |lang, filesForLanguage|
-            pages = filesForLanguage.map { |f| writePage(convert(f, lang)) }
-            writeList(pages, lang)
+          filesPerLanguage.each do |lang, filesForLanguage|
+            Beulogue.logger.debug "Pages for lang #{lang}, #{filesForLanguage}"
+
+            elapsed_time = Time.measure do
+              pages = filesForLanguage.map { |f| writePage(convert(f, lang)) }
+              writeList(pages, lang)
+              writeRss(pages, lang)
+            end
+
+            Beulogue.logger.info "Site for language #{lang} (#{filesForLanguage.size} pages) built in #{elapsed_time.total_milliseconds.round(2)}ms."
           end
 
           writeRedirection(@config.languages[0])
         else
           lang = @config.languages[0]
-          pages = files.map { |f| writePage(convert(f, "")) }
-          writeList(pages, "")
+
+          Beulogue.logger.debug "Pages for lang #{lang}, #{files}"
+
+          elapsed_time = Time.measure do
+            pages = files.map { |f| writePage(convert(f, "")) }
+            writeList(pages, "")
+            writeRss(pages, "")
+          end
+
+          Beulogue.logger.info "Site for language #{lang} (#{files.size} pages) built in #{elapsed_time.total_milliseconds.round(2)}ms."
         end
       end
     end
@@ -61,22 +78,49 @@ module Beulogue
 
     private def writeList(pages : Array(BeuloguePage), lang : String)
       model = {
-        "pages"    => pages.sort_by { |p| p.date }.reverse.map { |p| p.to_hash },
+        "beulogue" => {
+          "cwd" => @config.cwd,
+        },
         "language" => lang,
+        "pages"    => pages.sort_by { |p| p.date }.reverse.map { |p| p.to_hash },
         "site"     => {
           "title"     => @config.title,
           "languages" => @config.languages,
         },
-        "beulogue" => {
-          "cwd" => @config.cwd,
-        },
       }
+
+      Beulogue.logger.debug "Writing list for lang #{lang}: #{model}"
 
       targetDir = @config.targetDir
 
       if !targetDir.nil?
         File.write(Path[targetDir].join(lang, "index.html").to_s,
           HTML.unescape(Crustache.render(@templates.list, model)))
+      end
+    end
+
+    private def writeRss(pages : Array(BeuloguePage), lang : String)
+      rss = XML.build(indent: "  ", encoding: "utf-8") do |xml|
+        xml.element("rss", version: "2.0") do
+          xml.element("channel") do
+            xml.element("lastBuildDate") { xml.text Time.local.to_s("%F") }
+            xml.element("link") { xml.text @config.base }
+            xml.element("title") { xml.text @config.title }
+
+            pages.map { |p| xml.element("item") do
+              xml.element("description") { xml.text p.description }
+              xml.element("link") { xml.text "#{@config.base}#{p.url}" }
+              xml.element("pubDate") { xml.text p.date.to_s("%F") }
+              xml.element("title") { xml.text p.title }
+            end }
+          end
+        end
+      end
+
+      targetDir = @config.targetDir
+
+      if !targetDir.nil?
+        File.write(Path[targetDir].join(lang, "feed.xml").to_s, rss)
       end
     end
 
@@ -95,6 +139,8 @@ module Beulogue
       Dir.mkdir_p(toDir)
 
       model = BeuloguePage.new(bo, @config)
+
+      Beulogue.logger.debug "Writing page #{bo.toPath}: #{model}"
 
       File.write(bo.toPath, HTML.unescape(Crustache.render(@templates.page, model.to_hash)))
 

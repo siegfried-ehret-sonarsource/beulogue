@@ -16,8 +16,9 @@ module Beulogue
 
   class BeulogueFrontMatter
     YAML.mapping(
-      title: String,
       date: Time,
+      description: String,
+      title: String,
     )
   end
 
@@ -74,40 +75,43 @@ module Beulogue
   end
 
   class BeuloguePage
-    getter title : String
-    getter date : Time
+    getter beulogueCwd : String?
     getter content : String
+    getter date : Time
+    getter description : String
     getter language : String
-    getter url : String
+    getter title : String
     getter siteTitle : String
     getter siteLanguages : Array(String)
-    getter beulogueCwd : String?
+    getter url : String
 
     def initialize(bo : BeulogueObject, config : BeulogueConfig)
-      @title = bo.frontMatter.title
-      @date = bo.frontMatter.date
+      @beulogueCwd = config.cwd
       @content = bo.content
+      @date = bo.frontMatter.date
+      @description = bo.frontMatter.description
       @language = config.languages[0]
-      @url = bo.toURL
       @siteTitle = config.title
       @siteLanguages = config.languages
-      @beulogueCwd = config.cwd
+      @title = bo.frontMatter.title
+      @url = bo.toURL
     end
 
     def to_hash
       model = {
-        "title"    => @title,
-        "date"     => @date,
-        "content"  => @content,
-        "language" => @language,
-        "url"      => @url,
-        "site"     => {
-          "title"     => @siteTitle,
-          "languages" => @siteLanguages,
-        },
         "beulogue" => {
           "cwd" => @beulogueCwd,
         },
+        "content"     => @content,
+        "date"        => @date,
+        "description" => @description,
+        "language"    => @language,
+        "site"        => {
+          "title"     => @siteTitle,
+          "languages" => @siteLanguages,
+        },
+        "title" => @title,
+        "url"   => @url,
       }
 
       model
