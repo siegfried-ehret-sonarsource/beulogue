@@ -133,6 +133,8 @@ The templating engine is [mustache](https://mustache.github.io/).
 
 If you have a variable `title`, use `{{title}}` in your template to display if.
 
+> All variables are HTML escaped by default. If you want to return unescaped HTML, use the triple mustache: {{{name}}}.
+
 If you have a variable `pages` which is a list of objects with a `title` property, you can loop using:
 
 ```
