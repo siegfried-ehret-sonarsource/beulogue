@@ -6,7 +6,11 @@
 
 ### Download binaries
 
-TODO
+- Windows: :x:
+- MacOS: :x:
+- Linux: :white_check_mark:
+
+Go to the [release page](https://github.com/SiegfriedEhret/beulogue/releases) !
 
 ### Build from source
 
@@ -16,6 +20,14 @@ TODO
 - The `beulogue` binary will be in the `bin/` folder.
 
 ## Usage
+
+Add `beulogue` to your path and run `beulogue` !
+
+Here are the possible commands:
+
+- `beulogue` or `beulogue build` to build the site.
+- `beulogue help` to show the help.
+- `beulogue version` to the the version. Amazing !
 
 ### Structure
 
@@ -37,10 +49,13 @@ my-website
     └── page.html
 ```
 
-- `beulogue.yml` is a mandatory configuration file
-- `content/` is the folder with all your pages
+- `beulogue.yml` is a mandatory configuration file.
+- `content/` is the folder with all your pages.
+- `templates/` is the folder for your templates.
 
 ### Configuration
+
+The configuration file for your site must be `beulogue.yml`.
 
 The possible keys and values are:
 
@@ -68,19 +83,19 @@ You can use front-matter, like that:
 ---
 title: My title
 date: 2019-05-07
+description: A small description
 ---
 
 # My content...
 ```
 
-The following properties are valid front-matter:
+The following properties are all mandatory:
 
-- `title`: The title for your content item.
+- `title`: the title for your content item.
 - `date`: a point in time, used to sort your content items ([more info on the format](https://yaml.org/type/timestamp.html)).
+- `description`: a small description, used for the rss feed for example.
 
 #### Multilingual site
-
-:warning: currently, a single language will end up in the language folder, I'll fix that.
 
 As explained in the Configuration part, you need at least one language, useful for the `lang` attribute for example.
 
@@ -102,8 +117,8 @@ Your contents:
 
 Structure:
 
-- If you have one language: everything will start the root of the `public` folder.
-- If you have multiple languages: each language will start in the `public/<language>/` folder. A default `index.html` file will be at the root of the `public` folder, redirecting to the default language.
+- If you have one language: everything will start the root of the `public` folder. A `feed.xml` file will be created in that folder.
+- If you have multiple languages: each language will start in the `public/<language>/` folder. A default `index.html` file will be at the root of the `public` folder, redirecting to the default language. A  `feed.xml` file will be created for each language.
 
 ### Templating
 
@@ -111,6 +126,30 @@ You have 2 html files to provide, they must be in the `templates` folder of your
 
 - `list.html`: for the list of items
 - `page.html`: for a content item
+
+The templating engine is [mustache](https://mustache.github.io/).
+
+#### Mustache 101
+
+If you have a variable `title`, use `{{title}}` in your template to display if.
+
+If you have a variable `pages` which is a list of objects with a `title` property, you can loop using:
+
+```
+{{#pages}}
+  <p>{{title}}</p>
+{{/pages}}
+```
+
+If you want a conditional rendering for `title` whether it has or not a value, use:
+
+```
+{{#title}}
+  Title is displayed ! {{title}}
+{{/title}}
+```
+
+Go to the [mustache help](https://mustache.github.io/mustache.5.html) for more info.
 
 #### Variables for the page template
 
@@ -127,17 +166,13 @@ You have 2 html files to provide, they must be in the `templates` folder of your
 
 #### Variables for the list template
 
-- `pages`: an array with page elements (see previous section).
+- `pages`: a list with page elements (see previous section).
 - `language`: the language of the page.
 - `site`
 	- `title`: the title of the site.
 	- `languages`: a list of available languages for the site.
 - `beulogue`
 	- `cwd`: the current working directory.
-
-### Running
-
-Run `beulogue` in `my-website` folder. Voilà !
 
 ## Notes
 
@@ -150,11 +185,13 @@ Run `beulogue` in `my-website` folder. Voilà !
 - [x] basic templating (list)
 - [x] markdown front-matter
 - [x] multilingual site
-- [ ] rss
-- [ ] shortcodes
+- [x] rss
+- [x] cli, help & debug
 
 And maybe at some point:
 
+- [ ] shortcodes
+- [ ] orphan pages
 - [ ] links between languages
 - [ ] tags
 - [ ] drafts
@@ -167,11 +204,11 @@ Licensed under the [GPLv3 license](./LICENSE).
 
 ## Development
 
-TODO: Write development instructions here
+Check the [contributing](./CONTRIBUTING.md) document for some info.
 
 ### Contributing
 
-1. Fork it (<https://github.com/your-github-user/beulogue/fork>)
+1. Fork it (https://github.com/SiegfriedEhret/beulogue/fork)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
