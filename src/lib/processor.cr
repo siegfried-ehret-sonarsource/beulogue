@@ -25,7 +25,10 @@ module Beulogue
             Beulogue.logger.debug "Pages for lang #{lang}, #{filesForLanguage}"
 
             elapsed_time = Time.measure do
-              pages = filesForLanguage.map { |f| writePage(convert(f, lang)) }
+              pages = filesForLanguage.map do |f|
+                Beulogue.logger.debug "Processing #{f}"
+                writePage(convert(f, lang))
+              end
               writeList(pages, lang)
               writeRss(pages, lang)
             end

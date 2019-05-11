@@ -27,6 +27,7 @@ module Beulogue
     getter toPath : Path
     getter toURL : String
     getter content : String
+    getter lang : String
     getter frontMatter : BeulogueFrontMatter
 
     def initialize(@fromPath : Path, lang : String, cwd : Path)
@@ -49,6 +50,7 @@ module Beulogue
 
       @frontMatter = BeulogueFrontMatter.from_yaml(frontMatter)
       @content = Markdown.to_html(content)
+      @lang = lang
 
       tempToPath = fromPath.to_s.sub("/content/", "/public/#{lang}/")
 
@@ -90,7 +92,7 @@ module Beulogue
       @content = bo.content
       @date = bo.frontMatter.date
       @description = bo.frontMatter.description
-      @language = config.languages[0]
+      @language = bo.lang
       @siteTitle = config.title
       @siteLanguages = config.languages
       @title = bo.frontMatter.title
