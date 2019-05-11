@@ -1,5 +1,5 @@
 name: beulogue
-version: 0.1.0
+version: 1.0.0
 
 authors:
   - Siegfried Ehret <siegfried@ehret.me>
@@ -10,7 +10,7 @@ targets:
 
 crystal: 0.28.0
 
-license: MIT
+license: GPL v3
 
 dependencies:
   crustache:
