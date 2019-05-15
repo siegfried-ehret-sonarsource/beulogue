@@ -1,5 +1,9 @@
 # beulogue releases
 
+## 1.1.1
+
+- :gift: enable use of partials for templates
+
 ## 1.0.1
 
 - :bug: Fix language property in non default language pages.
