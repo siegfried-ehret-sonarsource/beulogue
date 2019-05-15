@@ -1,4 +1,5 @@
 require "yaml"
+require "../objects/config"
 
 module Beulogue
   module Conf

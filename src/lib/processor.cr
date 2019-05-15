@@ -1,13 +1,13 @@
 require "html"
 require "markdown"
 require "xml"
-require "./objects"
+require "../objects/*"
 
 module Beulogue
   class Processor
     def initialize(cwd : String, @config : BeulogueConfig)
       @cwd = Path[cwd]
-      @templates = BeulogueTemplates.new(@cwd)
+      @renderer = Renderer.new
     end
 
     def run
@@ -98,7 +98,7 @@ module Beulogue
 
       if !targetDir.nil?
         File.write(Path[targetDir].join(lang, "index.html").to_s,
-          HTML.unescape(Crustache.render(@templates.list, model)))
+          HTML.unescape(@renderer.renderList(model)))
       end
     end
 
@@ -145,7 +145,7 @@ module Beulogue
 
       Beulogue.logger.debug "Writing page #{bo.toPath}: #{model}"
 
-      File.write(bo.toPath, HTML.unescape(Crustache.render(@templates.page, model.to_hash)))
+      File.write(bo.toPath, HTML.unescape(@renderer.renderPage(model.to_hash)))
 
       model
     end
