@@ -4,6 +4,7 @@ module Beulogue
       date: Time,
       description: String,
       title: String,
+      tags: Array(String)?
     )
   end
 end
