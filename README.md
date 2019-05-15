@@ -84,6 +84,8 @@ You can use front-matter, like that:
 title: My title
 date: 2019-05-07
 description: A small description
+tags:
+- news
 ---
 
 # My content...
@@ -91,9 +93,13 @@ description: A small description
 
 The following properties are all mandatory:
 
-- `title`: the title for your content item.
-- `date`: a point in time, used to sort your content items ([more info on the format](https://yaml.org/type/timestamp.html)).
-- `description`: a small description, used for the rss feed for example.
+- **title** (string): the title for your content item.
+- **date** (string): a point in time, used to sort your content items ([more info on the format](https://yaml.org/type/timestamp.html)).
+- **description** (string): a small description, used for the rss feed for example.
+
+The following properties are optional:
+
+- **tags** (array of string): some tags for your content.
 
 #### Multilingual site
 
@@ -157,6 +163,7 @@ Go to the [mustache help](https://mustache.github.io/mustache.5.html) for more i
 
 - `title`: the title of the page, from your content front matter.
 - `date`: the date of your content, from its front matter
+- `dateFormatted`: the same thing formatted as `YYYY-MM-DD`.
 - `content`: your content in html.
 - `language`: the language of your content.
 - `url`: the url of your page.
