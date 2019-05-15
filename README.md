@@ -208,6 +208,13 @@ Licensed under the [GPLv3 license](./LICENSE).
 
 Check the [contributing](./CONTRIBUTING.md) document for some info.
 
+`beulogue` follows my own FibVer (Fibonacci Versioning), which is:
+
+- Basically, it follows Semantic Versioning.
+- You have to use Fibonacci suite numbers when you bump the version.
+- Until you bump a major version, don't reset patch. For a version, it gives an idea of how many features and bugfixes you made.
+- I'll spec that one day.
+
 ### Contributing
 
 1. Fork it (https://github.com/SiegfriedEhret/beulogue/fork)
