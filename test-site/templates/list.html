@@ -2,7 +2,12 @@
 	{{>header}}
 	<ul>
 	{{#pages}}
-	<li><a href="{{url}}"><b>{{title}}</b></a></li>
+	<li>
+		<a href="{{url}}"><b>{{title}}</b></a>
+		{{#tags}}
+			<p>{{.}}</p>
+		{{/tags}}
+	</li>
 	{{/pages}}
 	</ul>
 </section>
