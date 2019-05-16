@@ -5,6 +5,7 @@ module Beulogue
       base: String,
       title: String,
       languages: Array(String),
+      rssFilename: String?,
 
       # Injected
       cwd: String?,

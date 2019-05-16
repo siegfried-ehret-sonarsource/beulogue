@@ -13,6 +13,10 @@ module Beulogue
       config.cwd = cwd
       config.targetDir = cwdPath.join("public").to_s
 
+      if !config.rssFilename
+        config.rssFilename = "feed.xml"
+      end
+
       Beulogue.logger.debug "Config: #{config.inspect}"
 
       config

@@ -121,9 +121,10 @@ module Beulogue
       end
 
       targetDir = @config.targetDir
+      rssFilename = @config.rssFilename
 
-      if !targetDir.nil?
-        File.write(Path[targetDir].join(lang, "feed.xml").to_s, rss)
+      if !targetDir.nil? && !rssFilename.nil?
+        File.write(Path[targetDir].join(lang, @config.rssFilename).to_s, rss)
       end
     end
 
