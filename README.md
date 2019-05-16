@@ -57,21 +57,25 @@ my-website
 
 The configuration file for your site must be `beulogue.yml`.
 
-The possible keys and values are:
-
-- **base** (string): the base url of your website.
-- **title** (string): the title of your website.
-- **languages** (array of strings): the list of languages for the website. You must add at least one language; the first one is the default one.
-
 Example:
 
 ```yaml
 base: https://ehret.me
 title: My site
 languages:
-  - en
-  - fr
+- en
+- fr
 ```
+
+The mandatory possible keys and values are:
+
+- **base** (string): the base url of your website.
+- **title** (string): the title of your website.
+- **languages** (array of strings): the list of languages for the website. You must add at least one language; the first one is the default one.
+
+The optional ones are:
+
+- **rssFilename** (string): the name for the rss feed (default: `feed.xml`)
 
 ### Content
 
@@ -111,8 +115,8 @@ If our configuration is like the following:
 base: https://ehret.me
 title: My site
 languages:
-  - en
-  - fr
+- en
+- fr
 ```
 
 Your contents:
