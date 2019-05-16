@@ -1,5 +1,9 @@
 # beulogue releases
 
+## [1.3.1](https://github.com/SiegfriedEhret/beulogue/releases/tag/release-1.3.1)
+
+- :gift: allow to set up the rss filename (default: feed.xml).
+
 ## [1.2.1](https://github.com/SiegfriedEhret/beulogue/releases/tag/release-1.2.1)
 
 - :gift: enable use of tags in front matter (no tag pages for now, maybe later...)
